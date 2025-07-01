@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication2.CalculatorViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +38,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CalculatorUI() {
-    var displayText by remember { mutableStateOf("123456789") }
+fun CalculatorUI(viewModel: CalculatorViewModel = viewModel()) {
+    val displayText by viewModel.display.collectAsState()
 
     val buttons = listOf(
         listOf("C", "+/-", "%", "/"),
@@ -78,6 +80,10 @@ fun CalculatorUI() {
                 .weight(1.5f)
                 .fillMaxWidth()
         ) {
+//            TextField(value = displayText,
+//                onValueChange = {},
+//                readOnly = true,
+//                modifier = Modifier.fillMaxWidth())
             buttons.forEach { row ->
                 Row(
                     modifier = Modifier
@@ -87,12 +93,12 @@ fun CalculatorUI() {
                     row.forEachIndexed { index, label ->
                         if (label == "0_continued") return@forEachIndexed
 
-                        val isOperator = index == 4 || label == "="
+                        val isOperator = index == 3 || label == "="
 
                         val weight = if (label == "0") 2f else 1f
 
                         Button(
-                            onClick = { /* TODO */ },
+                            onClick = { viewModel.onButtonClick(label) },
                             shape = RoundedCornerShape(0.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (isOperator) Color.Red else Color.White,
